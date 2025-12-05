@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factoría Estudio | Guía de Implementación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --negro: #0a0a0a;
+            --gris-oscuro: #1a1a1a;
+            --gris-medio: #333333;
+            --gris-claro: #666666;
+            --blanco: #ffffff;
+            --blanco-roto: #f5f5f5;
+            --acento: #ff4444;
+            --acento-hover: #cc0000;
+            --verde: #22c55e;
+            --amarillo: #eab308;
+            --azul: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--negro);
+            color: var(--blanco);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* Header Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(255,68,68,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(59,130,246,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--acento);
+            color: var(--blanco);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 800;
+            line-height: 0.95;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero h1 span {
+            color: var(--acento);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--gris-claro);
+            max-width: 600px;
+            font-weight: 300;
+        }
+
+        /* Sections */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-dark {
+            background: var(--gris-oscuro);
+            max-width: 100%;
+            padding: 6rem 2rem;
+        }
+
+        .section-dark .section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 4rem;
+        }
+
+        .section-number {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--acento);
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--gris-claro);
+            max-width: 600px;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--gris-oscuro);
+            border: 1px solid var(--gris-medio);
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .section-dark .card {
+            background: var(--negro);
+        }
+
+        .card:hover {
+            border-color: var(--acento);
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-text {
+            color: var(--gris-claro);
+            font-size: 0.9rem;
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--gris-medio);
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--acento);
+            color: var(--blanco);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .step-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--gris-claro);
+            margin-bottom: 1rem;
+        }
+
+        .step-details {
+            background: var(--negro);
+            padding: 1.5rem;
+            margin-top: 1rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            color: var(--verde);
+            border-left: 3px solid var(--acento);
+        }
+
+        .section-dark .step-details {
+            background: var(--gris-oscuro);
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gris-medio);
+        }
+
+        th {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            color: var(--gris-claro);
+            background: var(--gris-oscuro);
+        }
+
+        .section-dark th {
+            background: var(--negro);
+        }
+
+        td {
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-demo { background: var(--amarillo); color: var(--negro); }
+        .badge-prod { background: var(--verde); color: var(--negro); }
+        .badge-warning { background: var(--acento); color: var(--blanco); }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 3rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat {
+            text-align: center;
+            padding: 2rem;
+            background: var(--gris-oscuro);
+            border: 1px solid var(--gris-medio);
+        }
+
+        .section-dark .stat {
+            background: var(--negro);
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--acento);
+            line-height: 1;
+        }
+
+        .stat-label {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gris-claro);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Diagram */
+        .diagram {
+            background: var(--gris-oscuro);
+            padding: 3rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .section-dark .diagram {
+            background: var(--negro);
+        }
+
+        .diagram-flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .diagram-item {
+            background: var(--negro);
+            border: 2px solid var(--gris-medio);
+            padding: 1.5rem 2rem;
+            font-weight: 600;
+            min-width: 150px;
+        }
+
+        .section-dark .diagram-item {
+            background: var(--gris-oscuro);
+        }
+
+        .diagram-item.active {
+            border-color: var(--acento);
+            background: rgba(255,68,68,0.1);
+        }
+
+        .diagram-arrow {
+            font-size: 2rem;
+            color: var(--acento);
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gris-medio);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--verde);
+            color: var(--negro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .check-icon.pending {
+            background: var(--gris-medio);
+        }
+
+        .checklist strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .checklist span {
+            color: var(--gris-claro);
+            font-size: 0.9rem;
+        }
+
+        /* Code block */
+        .code-block {
+            background: var(--negro);
+            border: 1px solid var(--gris-medio);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+
+        .section-dark .code-block {
+            background: var(--gris-oscuro);
+        }
+
+        .code-block .comment {
+            color: var(--gris-claro);
+        }
+
+        .code-block .command {
+            color: var(--verde);
+        }
+
+        .code-block .output {
+            color: var(--amarillo);
+        }
+
+        /* Improvements */
+        .improvement {
+            background: var(--gris-oscuro);
+            border-left: 4px solid var(--acento);
+            padding: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .section-dark .improvement {
+            background: var(--negro);
+        }
+
+        .improvement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .improvement h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .priority {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .priority-alta { background: var(--acento); }
+        .priority-media { background: var(--amarillo); color: var(--negro); }
+        .priority-baja { background: var(--azul); }
+
+        /* Footer */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--gris-medio);
+        }
+
+        footer p {
+            color: var(--gris-claro);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .step {
+                grid-template-columns: 1fr;
+            }
+
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .diagram-flow {
+                flex-direction: column;
+            }
+
+            .diagram-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Navigation */
+        .nav-sticky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            border-bottom: 1px solid var(--gris-medio);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gris-claro);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--acento);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-sticky">
+        <div class="nav-logo">Factoría <span style="color: var(--acento)">Estudio</span></div>
+        <ul class="nav-links">
+            <li><a href="#funcionamiento">Funcionamiento</a></li>
+            <li><a href="#arquitectura">Arquitectura</a></li>
+            <li><a href="#produccion">Producción</a></li>
+            <li><a href="#mejoras">Mejoras</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Sistema de Gestión</div>
+            <h1>
+                Guía de<br>
+                <span>Implementación</span>
+            </h1>
+            <p class="hero-subtitle">
+                Documentación técnica y hoja de ruta para pasar de la demo
+                a un sistema en producción.
+            </p>
+        </div>
+    </header>
+
+    <!-- Estado Actual -->
+    <section id="funcionamiento">
+        <div class="section-header">
+            <div class="section-number">01 — ESTADO ACTUAL</div>
+            <h2 class="section-title">Qué tienes ahora</h2>
+            <p class="section-subtitle">
+                Una demo funcional con datos sintéticos que simula el sistema completo.
+            </p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-value">50</div>
+                <div class="stat-label">Alumnos</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">30</div>
+                <div class="stat-label">Profesores</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">81</div>
+                <div class="stat-label">Actividades</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">7</div>
+                <div class="stat-label">Tipos de Pago</div>
+            </div>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">👥</div>
+                <h3 class="card-title">Gestión de Alumnos</h3>
+                <p class="card-text">
+                    Alta, baja y modificación de alumnos. Gestión de tutores para menores.
+                    Búsqueda y filtrado por sede, estado y nombre.
+                </p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📋</div>
+                <h3 class="card-title">Inscripciones</h3>
+                <p class="card-text">
+                    Control de matrículas en actividades. Asignación de profesor,
+                    horario y sede. Estados: activa, pendiente, baja.
+                </p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📅</div>
+                <h3 class="card-title">Horarios</h3>
+                <p class="card-text">
+                    Vista semanal de clases. Filtrado por profesor, sede y día.
+                    Visualización del número de alumnos por clase.
+                </p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h3 class="card-title">Ausencias</h3>
+                <p class="card-text">
+                    Registro de ausencias con motivo. Clasificación: justificadas
+                    y no justificadas. Impacto en cálculo de pagos.
+                </p>
+            </div>
+            <div class="card">
+                <div class="card-icon">💰</div>
+                <h3 class="card-title">Cálculo de Pagos</h3>
+                <p class="card-text">
+                    Motor con 7 tipos de pago: hora, alumno, fijo, mixto alumno,
+                    mixto porcentaje, mixto hora/alumno.
+                </p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📈</div>
+                <h3 class="card-title">Dashboard</h3>
+                <p class="card-text">
+                    Estadísticas en tiempo real. Distribución por área y sede.
+                    Ingresos estimados y últimas actividades.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Arquitectura -->
+    <section class="section-dark" id="arquitectura">
+        <div class="section-inner">
+            <div class="section-header">
+                <div class="section-number">02 — ARQUITECTURA</div>
+                <h2 class="section-title">Cómo funciona</h2>
+                <p class="section-subtitle">
+                    Stack tecnológico actual y flujo de datos en el sistema.
+                </p>
+            </div>
+
+            <div class="diagram">
+                <div class="diagram-flow">
+                    <div class="diagram-item">Usuario</div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-item active">Flask (Python)</div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-item">SQLite</div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Componente</th>
+                            <th>Demo (Actual)</th>
+                            <th>Producción (Futuro)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Base de datos</strong></td>
+                            <td><span class="badge badge-demo">SQLite</span> Archivo local</td>
+                            <td><span class="badge badge-prod">PostgreSQL</span> Supabase</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Backend</strong></td>
+                            <td><span class="badge badge-demo">Flask</span> localhost:5000</td>
+                            <td><span class="badge badge-prod">FastAPI</span> Railway/Vercel</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Frontend</strong></td>
+                            <td><span class="badge badge-demo">Jinja2</span> Templates HTML</td>
+                            <td><span class="badge badge-prod">React/Next.js</span> SPA</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Autenticación</strong></td>
+                            <td><span class="badge badge-warning">Ninguna</span></td>
+                            <td><span class="badge badge-prod">Supabase Auth</span> JWT</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hosting</strong></td>
+                            <td><span class="badge badge-demo">Local</span> Tu máquina</td>
+                            <td><span class="badge badge-prod">Cloud</span> Vercel + Supabase</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Datos</strong></td>
+                            <td><span class="badge badge-demo">Sintéticos</span> Faker</td>
+                            <td><span class="badge badge-prod">Reales</span> Migración</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="margin-top: 3rem; margin-bottom: 1.5rem;">Tipos de Pago Implementados</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Fórmula</th>
+                            <th>Ejemplo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>hora</code></td>
+                            <td>tarifa_hora × horas_mes</td>
+                            <td>25€/h × 16h = 400€</td>
+                        </tr>
+                        <tr>
+                            <td><code>alumno</code></td>
+                            <td>tarifa_alumno × num_alumnos</td>
+                            <td>8€ × 15 alumnos = 120€</td>
+                        </tr>
+                        <tr>
+                            <td><code>fijo</code></td>
+                            <td>cantidad_fija</td>
+                            <td>800€/mes</td>
+                        </tr>
+                        <tr>
+                            <td><code>mixto_alumno</code></td>
+                            <td>fijo + (tarifa × alumnos)</td>
+                            <td>300€ + (5€ × 20) = 400€</td>
+                        </tr>
+                        <tr>
+                            <td><code>mixto_porcentaje</code></td>
+                            <td>fijo + (ingresos × %)</td>
+                            <td>200€ + (2000€ × 15%) = 500€</td>
+                        </tr>
+                        <tr>
+                            <td><code>mixto_hora_alumno</code></td>
+                            <td>(hora × h) + (alumno × n)</td>
+                            <td>(20€ × 10h) + (3€ × 15) = 245€</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pasar a Producción -->
+    <section id="produccion">
+        <div class="section-header">
+            <div class="section-number">03 — PRODUCCIÓN</div>
+            <h2 class="section-title">Pasos para ir en serio</h2>
+            <p class="section-subtitle">
+                Hoja de ruta para convertir la demo en un sistema real.
+            </p>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Migrar Base de Datos</h3>
+                    <p>SQLite → PostgreSQL en Supabase (gratis hasta 500MB)</p>
+                    <div class="step-details">
+                        <span class="comment"># Crear proyecto en supabase.com</span><br>
+                        <span class="command">$ pg_dump factoria_demo.db > backup.sql</span><br>
+                        <span class="comment"># Importar en Supabase Dashboard → SQL Editor</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Implementar Autenticación</h3>
+                    <p>Supabase Auth con roles: Admin, Secretaría, Profesor, Familia</p>
+                    <div class="step-details">
+                        <span class="comment"># Activar Auth en Supabase</span><br>
+                        <span class="comment"># Configurar proveedores: Email, Google</span><br>
+                        <span class="comment"># Implementar RLS (Row Level Security)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Migrar Datos Reales</h3>
+                    <p>Importar datos actuales desde Google Sheets</p>
+                    <div class="step-details">
+                        <span class="comment"># Exportar Sheets a CSV</span><br>
+                        <span class="command">$ python scripts/import_from_sheets.py</span><br>
+                        <span class="output"># Validar integridad de datos</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Desplegar en Cloud</h3>
+                    <p>Frontend en Vercel, Backend en Railway/Supabase Edge Functions</p>
+                    <div class="step-details">
+                        <span class="comment"># Conectar repo a Vercel</span><br>
+                        <span class="command">$ vercel deploy --prod</span><br>
+                        <span class="output">✓ https://factoria.vercel.app</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Conectar Integraciones</h3>
+                    <p>Phidias (ausencias), Email (Resend), WhatsApp Business</p>
+                    <div class="step-details">
+                        <span class="comment"># Configurar cron job para Phidias</span><br>
+                        <span class="comment"># Implementar webhooks</span><br>
+                        <span class="comment"># Testing con datos reales</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h3>Piloto y Validación</h3>
+                    <p>1 mes de prueba en una sede antes de rollout completo</p>
+                    <div class="step-details">
+                        <span class="comment"># Seleccionar sede piloto (Valdemarín o Conde Orgaz)</span><br>
+                        <span class="comment"># Formar a usuarios clave</span><br>
+                        <span class="comment"># Recopilar feedback y ajustar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 4rem; margin-bottom: 2rem;">Estimación de Costes (Producción)</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Tier</th>
+                        <th>Coste/mes</th>
+                        <th>Coste/año</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Supabase</td>
+                        <td>Pro</td>
+                        <td>25€</td>
+                        <td>300€</td>
+                    </tr>
+                    <tr>
+                        <td>Vercel</td>
+                        <td>Pro</td>
+                        <td>20€</td>
+                        <td>240€</td>
+                    </tr>
+                    <tr>
+                        <td>Resend (Email)</td>
+                        <td>Pro</td>
+                        <td>20€</td>
+                        <td>240€</td>
+                    </tr>
+                    <tr>
+                        <td>Dominio</td>
+                        <td>-</td>
+                        <td>2€</td>
+                        <td>24€</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><strong>TOTAL</strong></td>
+                        <td><strong>~67€</strong></td>
+                        <td><strong>~800€</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Mejoras -->
+    <section class="section-dark" id="mejoras">
+        <div class="section-inner">
+            <div class="section-header">
+                <div class="section-number">04 — MEJORAS</div>
+                <h2 class="section-title">Qué añadir</h2>
+                <p class="section-subtitle">
+                    Funcionalidades recomendadas para el sistema en producción.
+                </p>
+            </div>
+
+            <div class="improvement">
+                <div class="improvement-header">
+                    <h4>🔐 Autenticación y Roles</h4>
+                    <span class="priority priority-alta">Alta</span>
+                </div>
+                <p style="color: var(--gris-claro);">
+                    Implementar login seguro con diferentes niveles de acceso.
+                    Admin ve todo, Secretaría gestiona, Profesores ven sus clases,
+                    Familias ven sus hijos.
+                </p>
+                <ul class="checklist" style="margin-top: 1rem;">
+                    <li>
+                        <span class="check-icon pending">○</span>
+                        <div>
+                            <strong>Magic links por email</strong>
+                            <span>Sin contraseñas, más seguro</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="check-icon pending">○</span>
+                        <div>
+                            <strong>Row Level Security</strong>
+                            <span>Cada usuario solo ve lo suyo</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="improvement">
+                <div class="improvement-header">
+                    <h4>📧 Notificaciones Automáticas</h4>
+                    <span class="priority priority-alta">Alta</span>
+                </div>
+                <p style="color: var(--gris-claro);">
+                    Sistema de alertas por email y WhatsApp. Ausencias → Profesor.
+                    Recordatorios de factura → Proveedor. Informes → Familias.
+                </p>
+                <ul class="checklist" style="margin-top: 1rem;">
+                    <li>
+                        <span class="check-icon pending">○</span>
+                        <div>
+                            <strong>Email transaccional (Resend)</strong>
+                            <span>Ausencias, recordatorios, informes</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="check-icon pending">○</span>
+                        <div>
+                            <strong>WhatsApp Business API</strong>
+                            <span>Urgencias y confirmaciones</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="improvement">
+                <div class="improvement-header">
+                    <h4>📄 Módulo de Facturación</h4>
+                    <span class="priority priority-alta">Alta</span>
+                </div>
+                <p style="color: var(--gris-claro);">
+                    Portal para que proveedores suban facturas. Validación automática.
+                    OCR para extraer datos. Comparación esperado vs recibido.
+                </p>
+                <ul class="checklist" style="margin-top: 1rem;">
+                    <li>
+                        <span class="check-icon pending">○</span>
+                        <div>
+                            <strong>Subida de PDFs</strong>
+                            <span>Portal self-service para proveedores</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="check-icon pending">○</span>
+                        <div>
+                            <strong>Validación automática</strong>
+                            <span>Nº factura único, fechas, importes</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="check-icon pending">○</span>
+                        <div>
+                            <strong>OCR (Mindee)</strong>
+                            <span>Extracción automática de datos</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="improvement">
+                <div class="improvement-header">
+                    <h4>🔗 Integración Phidias</h4>
+                    <span class="priority priority-media">Media</span>
+                </div>
+                <p style="color: var(--gris-claro);">
+                    Importación automática de ausencias desde el sistema del colegio.
+                    Cron diario que sincroniza datos sin intervención manual.
+                </p>
+                <ul class="checklist" style="margin-top: 1rem;">
+                    <li>
+                        <span class="check-icon pending">○</span>
+                        <div>
+                            <strong>Endpoint CSV/JSON</strong>
+                            <span>Validar acceso con IT del colegio</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="check-icon pending">○</span>
+                        <div>
+                            <strong>Cron job diario</strong>
+                            <span>n8n o Supabase Edge Functions</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="improvement">
+                <div class="improvement-header">
+                    <h4>📱 App Móvil / PWA</h4>
+                    <span class="priority priority-media">Media</span>
+                </div>
+                <p style="color: var(--gris-claro);">
+                    Progressive Web App instalable en móvil. Notificaciones push.
+                    Acceso rápido para profesores y familias.
+                </p>
+            </div>
+
+            <div class="improvement">
+                <div class="improvement-header">
+                    <h4>📊 Reportes Avanzados</h4>
+                    <span class="priority priority-baja">Baja</span>
+                </div>
+                <p style="color: var(--gris-claro);">
+                    Dashboard con gráficos interactivos. Exportación a Excel.
+                    Comparativas mensuales/anuales. Predicción de ingresos.
+                </p>
+            </div>
+
+            <div class="improvement">
+                <div class="improvement-header">
+                    <h4>🎭 Portal de Proyectos</h4>
+                    <span class="priority priority-baja">Baja</span>
+                </div>
+                <p style="color: var(--gris-claro);">
+                    Gestión de conciertos, obras de teatro, exposiciones.
+                    Formularios para profesores. Calendario público de eventos.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checklist Final -->
+    <section>
+        <div class="section-header">
+            <div class="section-number">05 — CHECKLIST</div>
+            <h2 class="section-title">Antes de lanzar</h2>
+            <p class="section-subtitle">
+                Verificación final antes de poner el sistema en producción.
+            </p>
+        </div>
+
+        <ul class="checklist">
+            <li>
+                <span class="check-icon">✓</span>
+                <div>
+                    <strong>Demo funcional completada</strong>
+                    <span>Sistema operativo con datos sintéticos</span>
+                </div>
+            </li>
+            <li>
+                <span class="check-icon pending">○</span>
+                <div>
+                    <strong>Revisión legal con DPO</strong>
+                    <span>GDPR, datos de menores, consentimientos</span>
+                </div>
+            </li>
+            <li>
+                <span class="check-icon pending">○</span>
+                <div>
+                    <strong>Validación de stakeholders</strong>
+                    <span>Aprobación del plan por dirección</span>
+                </div>
+            </li>
+            <li>
+                <span class="check-icon pending">○</span>
+                <div>
+                    <strong>Cuenta Supabase creada</strong>
+                    <span>Proyecto configurado con BD</span>
+                </div>
+            </li>
+            <li>
+                <span class="check-icon pending">○</span>
+                <div>
+                    <strong>Datos reales importados</strong>
+                    <span>Migración desde Sheets validada</span>
+                </div>
+            </li>
+            <li>
+                <span class="check-icon pending">○</span>
+                <div>
+                    <strong>Autenticación implementada</strong>
+                    <span>Roles y permisos configurados</span>
+                </div>
+            </li>
+            <li>
+                <span class="check-icon pending">○</span>
+                <div>
+                    <strong>Testing con casos reales</strong>
+                    <span>Validar cálculo de pagos con 3 meses anteriores</span>
+                </div>
+            </li>
+            <li>
+                <span class="check-icon pending">○</span>
+                <div>
+                    <strong>Formación de usuarios</strong>
+                    <span>Sesión con secretaría y usuarios clave</span>
+                </div>
+            </li>
+            <li>
+                <span class="check-icon pending">○</span>
+                <div>
+                    <strong>Plan de contingencia</strong>
+                    <span>Backup, rollback, procedimiento manual</span>
+                </div>
+            </li>
+            <li>
+                <span class="check-icon pending">○</span>
+                <div>
+                    <strong>Piloto en una sede</strong>
+                    <span>1 mes de prueba antes de extender</span>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <!-- Ejecutar Demo -->
+    <section class="section-dark">
+        <div class="section-inner">
+            <div class="section-header">
+                <div class="section-number">06 — EJECUTAR</div>
+                <h2 class="section-title">Probar ahora</h2>
+                <p class="section-subtitle">
+                    Comandos para ejecutar la demo en tu máquina.
+                </p>
+            </div>
+
+            <div class="code-block">
+                <span class="comment"># Navegar al proyecto</span><br>
+                <span class="command">cd ~/Desktop/factoria-demo</span><br><br>
+
+                <span class="comment"># Activar entorno virtual</span><br>
+                <span class="command">source venv/bin/activate</span><br><br>
+
+                <span class="comment"># Ejecutar aplicación</span><br>
+                <span class="command">python app/main.py</span><br><br>
+
+                <span class="output">🚀 Servidor en: http://localhost:5000</span>
+            </div>
+
+            <div class="diagram" style="margin-top: 2rem;">
+                <p style="color: var(--gris-claro); margin-bottom: 1rem;">
+                    <strong>Módulos disponibles en la demo:</strong>
+                </p>
+                <div class="diagram-flow" style="flex-wrap: wrap; gap: 0.5rem;">
+                    <div class="diagram-item" style="min-width: auto; padding: 1rem;">📊 Dashboard</div>
+                    <div class="diagram-item" style="min-width: auto; padding: 1rem;">👥 Alumnos</div>
+                    <div class="diagram-item" style="min-width: auto; padding: 1rem;">📋 Inscripciones</div>
+                    <div class="diagram-item" style="min-width: auto; padding: 1rem;">📅 Horarios</div>
+                    <div class="diagram-item" style="min-width: auto; padding: 1rem;">📊 Ausencias</div>
+                    <div class="diagram-item" style="min-width: auto; padding: 1rem;">💰 Pagos</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>
+            <strong>Factoría Estudio</strong> — Sistema de Gestión<br>
+            Demo generada con Claude Code · Diciembre 2024
+        </p>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card, .step, .improvement, .stat').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

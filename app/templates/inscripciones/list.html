@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Inscripciones - Factoría Demo{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1><i class="bi bi-journal-check"></i> Inscripciones</h1>
+        <p class="text-muted">Gestión de inscripciones en actividades</p>
+    </div>
+    <div>
+        <span class="badge bg-primary fs-6">{{ inscripciones | length }} inscripciones</span>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="filter-bar">
+    <form method="GET" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">Área</label>
+            <select class="form-select" name="area">
+                <option value="">Todas las áreas</option>
+                {% for area in areas %}
+                <option value="{{ area.id }}" {% if area.id|string == area_id %}selected{% endif %}>
+                    {{ area.icono }} {{ area.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Sede</label>
+            <select class="form-select" name="sede">
+                <option value="">Todas las sedes</option>
+                {% for sede in sedes %}
+                <option value="{{ sede.id }}" {% if sede.id|string == sede_id %}selected{% endif %}>
+                    {{ sede.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Estado</label>
+            <select class="form-select" name="estado">
+                <option value="">Todos</option>
+                <option value="activa" {% if estado == 'activa' %}selected{% endif %}>Activas</option>
+                <option value="pendiente" {% if estado == 'pendiente' %}selected{% endif %}>Pendientes</option>
+                <option value="baja" {% if estado == 'baja' %}selected{% endif %}>Bajas</option>
+                <option value="suspendida" {% if estado == 'suspendida' %}selected{% endif %}>Suspendidas</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-filter"></i> Filtrar
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Inscripciones -->
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Alumno</th>
+                        <th>Actividad</th>
+                        <th>Profesor</th>
+                        <th>Horario</th>
+                        <th>Sede</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for insc in inscripciones %}
+                    <tr>
+                        <td>
+                            <strong>{{ insc.alumno_nombre }}</strong>
+                            <br><small class="text-muted">{{ insc.edad }} años</small>
+                        </td>
+                        <td>
+                            <span class="area-badge">
+                                {{ insc.area_icono }} {{ insc.actividad_nombre }}
+                            </span>
+                            <br><small class="text-muted">{{ insc.area_nombre }}</small>
+                        </td>
+                        <td>{{ insc.profesor_nombre or '-' }}</td>
+                        <td>
+                            {% if insc.dia_semana %}
+                                <strong>{{ insc.dia_semana }}</strong><br>
+                                <small class="text-muted">{{ insc.hora_inicio }}</small>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ insc.sede_nombre }}</td>
+                        <td>{{ insc.precio | currency }}</td>
+                        <td>
+                            <span class="badge badge-estado badge-{{ insc.estado }}">
+                                {{ insc.estado | capitalize }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            No se encontraron inscripciones con los filtros aplicados
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen -->
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h3>{{ inscripciones | selectattr('estado', 'equalto', 'activa') | list | length }}</h3>
+                <small>Inscripciones Activas</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-dark">
+            <div class="card-body text-center">
+                <h3>{{ inscripciones | selectattr('estado', 'equalto', 'pendiente') | list | length }}</h3>
+                <small>Pendientes</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-secondary text-white">
+            <div class="card-body text-center">
+                <h3>{{ inscripciones | selectattr('estado', 'equalto', 'baja') | list | length }}</h3>
+                <small>Bajas</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

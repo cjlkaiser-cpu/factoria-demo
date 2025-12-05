@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}{{ alumno.nombre }} {{ alumno.apellidos }} - Factoría Demo{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('alumnos_list') }}">Alumnos</a></li>
+            <li class="breadcrumb-item active">{{ alumno.nombre }} {{ alumno.apellidos }}</li>
+        </ol>
+    </nav>
+    <h1>
+        <i class="bi bi-person-circle"></i>
+        {{ alumno.nombre }} {{ alumno.apellidos }}
+        {% if alumno.activo %}
+            <span class="badge bg-success">Activo</span>
+        {% else %}
+            <span class="badge bg-secondary">Inactivo</span>
+        {% endif %}
+    </h1>
+</div>
+
+<div class="row">
+    <!-- Datos del Alumno -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-person"></i> Datos Personales
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Edad:</th>
+                        <td>
+                            <span class="badge {% if alumno.edad < 18 %}bg-info{% else %}bg-secondary{% endif %}">
+                                {{ alumno.edad }} años
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Fecha Nac.:</th>
+                        <td>{{ alumno.fecha_nacimiento | fecha }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sede:</th>
+                        <td>{{ alumno.sede_nombre or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ alumno.email or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Teléfono:</th>
+                        <td>{{ alumno.telefono or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Dirección:</th>
+                        <td>{{ alumno.direccion or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Alta:</th>
+                        <td>{{ alumno.fecha_alta | fecha }}</td>
+                    </tr>
+                </table>
+                {% if alumno.notas %}
+                <div class="alert alert-info mt-3 mb-0">
+                    <small><strong>Notas:</strong> {{ alumno.notas }}</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tutores -->
+        {% if tutores %}
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-people"></i> Tutores
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for tutor in tutores %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ tutor.nombre }}</strong>
+                            <span class="badge bg-light text-dark">{{ tutor.relacion }}</span>
+                        </div>
+                        <small class="text-muted">
+                            {% if tutor.email %}
+                            <i class="bi bi-envelope"></i> {{ tutor.email }}<br>
+                            {% endif %}
+                            {% if tutor.telefono %}
+                            <i class="bi bi-telephone"></i> {{ tutor.telefono }}
+                            {% endif %}
+                        </small>
+                        {% if tutor.es_contacto_principal %}
+                        <span class="badge bg-primary mt-1">Contacto principal</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Inscripciones -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-journal-check"></i> Inscripciones</span>
+                <span class="badge bg-primary">{{ inscripciones | length }}</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Actividad</th>
+                                <th>Profesor</th>
+                                <th>Horario</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for insc in inscripciones %}
+                            <tr>
+                                <td>
+                                    <span class="area-badge">
+                                        {{ insc.area_icono }} {{ insc.actividad_nombre }}
+                                    </span>
+                                    <br><small class="text-muted">{{ insc.area_nombre }}</small>
+                                </td>
+                                <td>{{ insc.profesor_nombre or '-' }}</td>
+                                <td>
+                                    {% if insc.dia_semana %}
+                                    {{ insc.dia_semana }}<br>
+                                    <small class="text-muted">{{ insc.hora_inicio }}</small>
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td>{{ insc.precio | currency }}</td>
+                                <td>
+                                    <span class="badge badge-estado badge-{{ insc.estado }}">
+                                        {{ insc.estado | capitalize }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    No hay inscripciones registradas
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ausencias -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-calendar-x"></i> Historial de Ausencias</span>
+                <span class="badge bg-warning">{{ ausencias | length }}</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Actividad</th>
+                                <th>Motivo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for aus in ausencias %}
+                            <tr>
+                                <td>{{ aus.fecha | fecha }}</td>
+                                <td>{{ aus.actividad_nombre or '-' }}</td>
+                                <td>{{ aus.motivo or 'Sin especificar' }}</td>
+                                <td>
+                                    {% if aus.justificada %}
+                                    <span class="badge bg-success">Justificada</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">No justificada</span>
+                                    {% endif %}
+                                    {% if aus.notificado_profesor %}
+                                    <span class="badge bg-info">Notificada</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    No hay ausencias registradas
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

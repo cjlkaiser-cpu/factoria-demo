@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Pagos - Factoría Demo{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-cash-stack"></i> Pagos a Profesores</h1>
+    <p class="text-muted">Cálculo y gestión de pagos mensuales</p>
+</div>
+
+<!-- Resumen -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Total a Pagar (estimado)</h6>
+                        <h2 class="mb-0">{{ total_pagos | currency }}</h2>
+                    </div>
+                    <i class="bi bi-wallet2 fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0 text-muted">Período</h6>
+                        <h4 class="mb-0">
+                            {% set meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                                          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] %}
+                            {{ meses[mes] }} {{ anio }}
+                        </h4>
+                    </div>
+                    <i class="bi bi-calendar3 fs-1 text-muted"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tipos de pago (leyenda) -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Tipos de Cálculo de Pago
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for tipo, desc in tipos_pago.items() %}
+            <div class="col-md-4 mb-2">
+                <span class="badge bg-light text-dark">{{ tipo }}</span>
+                <small class="text-muted">{{ desc }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de Pagos -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Desglose por Profesor</span>
+        <span class="badge bg-primary">{{ pagos | length }} profesores</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Profesor</th>
+                        <th>Especialidad</th>
+                        <th>Tipo de Pago</th>
+                        <th class="text-center">Alumnos</th>
+                        <th class="text-center">Clases/Sem</th>
+                        <th class="text-end">Importe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pago in pagos %}
+                    <tr>
+                        <td><strong>{{ pago.nombre }}</strong></td>
+                        <td>{{ pago.especialidad or '-' }}</td>
+                        <td>
+                            <span class="badge bg-light text-dark">
+                                {{ pago.tipo_pago or 'hora' }}
+                            </span>
+                            <br>
+                            <small class="text-muted">
+                                {% if pago.tipo_pago == 'hora' %}
+                                    {{ pago.tarifa_hora | currency }}/hora
+                                {% elif pago.tipo_pago == 'alumno' %}
+                                    {{ pago.tarifa_alumno | currency }}/alumno
+                                {% elif pago.tipo_pago == 'fijo' %}
+                                    Fijo: {{ pago.cantidad_fija | currency }}
+                                {% elif pago.tipo_pago == 'mixto_alumno' %}
+                                    {{ pago.cantidad_fija | currency }} + {{ pago.tarifa_alumno | currency }}/al
+                                {% elif pago.tipo_pago == 'mixto_porcentaje' %}
+                                    {{ pago.cantidad_fija | currency }} + {{ pago.porcentaje_ingresos }}%
+                                {% elif pago.tipo_pago == 'mixto_hora_alumno' %}
+                                    {{ pago.tarifa_hora | currency }}/h + {{ pago.tarifa_alumno | currency }}/al
+                                {% else %}
+                                    {{ pago.tarifa_hora | currency }}/hora
+                                {% endif %}
+                            </small>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-info">{{ pago.num_alumnos or 0 }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-secondary">{{ pago.num_clases or 0 }}</span>
+                        </td>
+                        <td class="text-end">
+                            <strong class="text-success">{{ pago.importe_calculado | currency }}</strong>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No hay profesores con configuración de pago
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <th colspan="5" class="text-end">TOTAL:</th>
+                        <th class="text-end text-primary fs-5">{{ total_pagos | currency }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Notas -->
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="bi bi-exclamation-triangle"></i> Notas Importantes
+    </div>
+    <div class="card-body">
+        <ul class="mb-0">
+            <li>Los importes son <strong>estimaciones</strong> basadas en las inscripciones activas.</li>
+            <li>El cálculo real puede variar según ausencias y ajustes manuales.</li>
+            <li>Las horas se estiman como: clases semanales × 4 semanas/mes.</li>
+            <li>Los profesores con tipo "mixto" combinan diferentes formas de cálculo.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

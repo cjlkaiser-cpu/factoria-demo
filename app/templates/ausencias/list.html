@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Ausencias - Factoría Demo{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-person-x"></i> Ausencias</h1>
+    <p class="text-muted">Registro y seguimiento de ausencias</p>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-value text-primary">{{ stats.total or 0 }}</div>
+            <div class="stat-label">Ausencias (último mes)</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-value text-success">{{ stats.justificadas or 0 }}</div>
+            <div class="stat-label">Justificadas</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-value text-warning">{{ stats.no_justificadas or 0 }}</div>
+            <div class="stat-label">No Justificadas</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="filter-bar">
+    <form method="GET" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">Desde</label>
+            <input type="date" class="form-control" name="desde" value="{{ fecha_desde }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Hasta</label>
+            <input type="date" class="form-control" name="hasta" value="{{ fecha_hasta }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Estado</label>
+            <select class="form-select" name="justificada">
+                <option value="">Todas</option>
+                <option value="1" {% if justificada == '1' %}selected{% endif %}>Justificadas</option>
+                <option value="0" {% if justificada == '0' %}selected{% endif %}>No justificadas</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-filter"></i> Filtrar
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Ausencias -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Registro de Ausencias</span>
+        <span class="badge bg-secondary">{{ ausencias | length }} registros</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Alumno</th>
+                        <th>Actividad</th>
+                        <th>Motivo</th>
+                        <th>Estado</th>
+                        <th>Notificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aus in ausencias %}
+                    <tr>
+                        <td>
+                            <strong>{{ aus.fecha | fecha }}</strong>
+                        </td>
+                        <td>{{ aus.alumno_nombre }}</td>
+                        <td>{{ aus.actividad_nombre or '-' }}</td>
+                        <td>{{ aus.motivo or 'Sin especificar' }}</td>
+                        <td>
+                            {% if aus.justificada %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Justificada
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-exclamation-circle"></i> No justificada
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if aus.notificado_profesor %}
+                                <span class="badge bg-info">
+                                    <i class="bi bi-bell-fill"></i> Notificado
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-bell-slash"></i> Pendiente
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No se encontraron ausencias con los filtros aplicados
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Información -->
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="bi bi-lightbulb"></i> Sobre las ausencias
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Tipos de ausencia:</h6>
+                <ul class="mb-0">
+                    <li><strong>Justificada:</strong> Con motivo válido (enfermedad, cita médica, etc.)</li>
+                    <li><strong>No justificada:</strong> Sin motivo o motivo no válido</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>Impacto en pagos:</h6>
+                <ul class="mb-0">
+                    <li>Las ausencias <strong>no médicas</strong> pueden afectar el cálculo de pagos</li>
+                    <li>Se descuenta proporcionalmente al profesor</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Factoría Demo{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-speedometer2"></i> Dashboard</h1>
+    <p class="text-muted">Resumen general del sistema</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon text-primary">👥</div>
+            <div class="stat-value">{{ stats.total_alumnos }}</div>
+            <div class="stat-label">Alumnos Activos</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon text-success">📋</div>
+            <div class="stat-value">{{ stats.inscripciones_activas }}</div>
+            <div class="stat-label">Inscripciones Activas</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon text-warning">🎓</div>
+            <div class="stat-value">{{ stats.total_profesores }}</div>
+            <div class="stat-label">Profesores</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon text-info">💰</div>
+            <div class="stat-value">{{ stats.ingresos_mensuales | currency }}</div>
+            <div class="stat-label">Ingresos Mensuales Est.</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Distribución por Área -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-pie-chart"></i> Inscripciones por Área
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Área</th>
+                                <th class="text-end">Inscripciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for area in areas_stats %}
+                            <tr>
+                                <td>
+                                    <span class="area-badge">
+                                        {{ area.icono }} {{ area.nombre }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-secondary">{{ area.num }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribución por Sede -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-building"></i> Alumnos por Sede
+            </div>
+            <div class="card-body">
+                {% for sede in sedes_stats %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>{{ sede.nombre }}</span>
+                        <span class="text-muted">{{ sede.num }} alumnos</span>
+                    </div>
+                    <div class="progress" style="height: 20px;">
+                        {% set pct = (sede.num / stats.total_alumnos * 100) if stats.total_alumnos > 0 else 0 %}
+                        <div class="progress-bar" role="progressbar"
+                             style="width: {{ pct }}%;"
+                             aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ "%.0f"|format(pct) }}%
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Últimas Inscripciones -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history"></i> Últimas Inscripciones</span>
+                <a href="{{ url_for('inscripciones_list') }}" class="btn btn-sm btn-outline-primary">Ver todas</a>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for insc in ultimas_inscripciones %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ insc.alumno }}</strong>
+                            <br><small class="text-muted">{{ insc.actividad }}</small>
+                        </div>
+                        <small class="text-muted">{{ insc.fecha_inscripcion | fecha }}</small>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">No hay inscripciones recientes</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimas Ausencias -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-person-x"></i> Últimas Ausencias</span>
+                <a href="{{ url_for('ausencias_list') }}" class="btn btn-sm btn-outline-primary">Ver todas</a>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for aus in ultimas_ausencias %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ aus.alumno }}</strong>
+                            <br><small class="text-muted">{{ aus.motivo or 'Sin motivo' }}</small>
+                        </div>
+                        <small class="text-muted">{{ aus.fecha | fecha }}</small>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">No hay ausencias recientes</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Resumen Rápido
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <h3 class="mb-0 text-primary">{{ stats.total_actividades }}</h3>
+                        <small class="text-muted">Actividades Disponibles</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="mb-0 text-success">{{ stats.total_areas }}</h3>
+                        <small class="text-muted">Áreas de Formación</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="mb-0 text-warning">{{ stats.ausencias_mes }}</h3>
+                        <small class="text-muted">Ausencias (último mes)</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="mb-0 text-info">2</h3>
+                        <small class="text-muted">Sedes Activas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

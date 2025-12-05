@@ -1,0 +1,22 @@
+# Factoría Demo - Dependencias
+# ============================
+
+# Framework web
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Base de datos
+# SQLite viene incluido en Python
+
+# Generación de datos sintéticos
+Faker==22.0.0
+
+# Utilidades
+python-dateutil==2.8.2
+python-dotenv==1.0.0
+
+# Para manipulación de datos
+pandas==2.1.4
+
+# Desarrollo
+pytest==7.4.3

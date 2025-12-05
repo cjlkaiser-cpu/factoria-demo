@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Alumnos - Factoría Demo{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1><i class="bi bi-people"></i> Alumnos</h1>
+        <p class="text-muted">Gestión de alumnos matriculados</p>
+    </div>
+    <div>
+        <span class="badge bg-primary fs-6">{{ alumnos | length }} alumnos</span>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="filter-bar">
+    <form method="GET" class="row g-3">
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" name="search"
+                       placeholder="Buscar por nombre..." value="{{ search }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="sede">
+                <option value="">Todas las sedes</option>
+                {% for sede in sedes %}
+                <option value="{{ sede.id }}" {% if sede.id|string == sede_id %}selected{% endif %}>
+                    {{ sede.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="estado">
+                <option value="">Todos los estados</option>
+                <option value="activo" {% if estado == 'activo' %}selected{% endif %}>Activos</option>
+                <option value="inactivo" {% if estado == 'inactivo' %}selected{% endif %}>Inactivos</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-filter"></i> Filtrar
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Alumnos -->
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Alumno</th>
+                        <th>Edad</th>
+                        <th>Sede</th>
+                        <th>Contacto</th>
+                        <th>Inscripciones</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alumno in alumnos %}
+                    <tr>
+                        <td>
+                            <strong>{{ alumno.apellidos }}, {{ alumno.nombre }}</strong>
+                            {% if alumno.tutor_nombre %}
+                            <br><small class="text-muted">
+                                <i class="bi bi-person"></i> {{ alumno.tutor_nombre }}
+                            </small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge {% if alumno.edad < 18 %}bg-info{% else %}bg-secondary{% endif %}">
+                                {{ alumno.edad }} años
+                            </span>
+                        </td>
+                        <td>{{ alumno.sede or '-' }}</td>
+                        <td>
+                            {% if alumno.email %}
+                                <small><i class="bi bi-envelope"></i> {{ alumno.email }}</small><br>
+                            {% endif %}
+                            {% if alumno.telefono %}
+                                <small><i class="bi bi-telephone"></i> {{ alumno.telefono }}</small>
+                            {% endif %}
+                            {% if not alumno.email and not alumno.telefono %}
+                                <small class="text-muted">Ver tutor</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-success">{{ alumno.num_inscripciones }}</span>
+                        </td>
+                        <td>
+                            {% if alumno.activo %}
+                                <span class="badge bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('alumno_detail', id=alumno.id) }}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            No se encontraron alumnos con los filtros aplicados
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

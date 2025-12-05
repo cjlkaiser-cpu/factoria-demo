@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Horarios - Factoría Demo{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-calendar3"></i> Horarios</h1>
+    <p class="text-muted">Vista semanal de clases y actividades</p>
+</div>
+
+<!-- Filtros -->
+<div class="filter-bar">
+    <form method="GET" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">Profesor</label>
+            <select class="form-select" name="profesor">
+                <option value="">Todos los profesores</option>
+                {% for prof in profesores %}
+                <option value="{{ prof.id }}" {% if prof.id|string == profesor_id %}selected{% endif %}>
+                    {{ prof.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Sede</label>
+            <select class="form-select" name="sede">
+                <option value="">Todas las sedes</option>
+                {% for sede in sedes %}
+                <option value="{{ sede.id }}" {% if sede.id|string == sede_id %}selected{% endif %}>
+                    {{ sede.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Día</label>
+            <select class="form-select" name="dia">
+                <option value="">Todos los días</option>
+                {% for dia in dias %}
+                <option value="{{ dia }}" {% if dia == dia_seleccionado %}selected{% endif %}>
+                    {{ dia }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-filter"></i> Filtrar
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Vista de Horarios -->
+<div class="row">
+    {% for dia in dias %}
+    <div class="col-lg mb-4">
+        <div class="card h-100">
+            <div class="card-header text-center bg-primary text-white">
+                <strong>{{ dia }}</strong>
+            </div>
+            <div class="card-body p-2">
+                {% if horarios_por_dia[dia] %}
+                    {% for h in horarios_por_dia[dia] %}
+                    <div class="horario-card">
+                        <div class="hora">
+                            {{ h.icono }} {{ h.hora_inicio }}
+                        </div>
+                        <div class="actividad">{{ h.actividad }}</div>
+                        <div class="profesor">
+                            <i class="bi bi-person"></i> {{ h.profesor or 'Sin asignar' }}
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">{{ h.sede }}</small>
+                            <span class="badge bg-info">{{ h.num_alumnos }} alum.</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-calendar-x fs-3"></i>
+                        <p class="mb-0 mt-2">Sin clases</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Leyenda -->
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Información
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Áreas de actividad:</h6>
+                <p class="mb-0">
+                    🎵 Música &nbsp;
+                    💃 Danza &nbsp;
+                    🤖 Robótica &nbsp;
+                    🎬 Audiovisuales &nbsp;
+                    🎨 Artes &nbsp;
+                    🎭 Teatro
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h6>Horario general:</h6>
+                <p class="mb-0">
+                    Lunes a Viernes: 16:00 - 20:30<br>
+                    <small class="text-muted">Los horarios pueden variar según la actividad</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .horario-card {
+        border-left-color: var(--bs-primary);
+    }
+    .horario-card:nth-child(even) {
+        border-left-color: var(--bs-success);
+    }
+    .horario-card:nth-child(3n) {
+        border-left-color: var(--bs-warning);
+    }
+</style>
+{% endblock %}
